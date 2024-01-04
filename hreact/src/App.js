@@ -104,12 +104,11 @@ function Search(props){
       props.onUpdate(searchTitle);
     }}>
       <input type='text' name ="searchTitle" value={searchTitle} onChange={event=>{
-            console.log(event.target.value);
-            // setTitle(event.target.value);
+            // console.log('input onChange : searchTitle =',event.target.value);
+            setsearchTitle(searchTitle);
           }}></input>
       <input type='submit' value="검색"></input>
     </form>
-    
   )
 }
 
@@ -126,12 +125,12 @@ function App() {
   
   // _mode[0]:데이터, [1]:데이터 상태의 값을 변경할 때 사용하는 함수
   // [0]: state 값, [1] : state 값을 변경할 때 사용할 함수
-  // console.log('_mode = ', _mode);
+
   let content = null;
   let contextControl = null;
   let contextDelete = null;
   let contextSearch = null;
-  let searchTitle = null;
+  let searchTitle = undefined;
   // const topics =[
   //   {id:1, title:'html', body:'html is ...'},
   //   {id:2, title:'css', body:'css is ...'},
@@ -141,9 +140,34 @@ function App() {
   if(mode === 'WELCOME'){
     content = <Article title="web" body="Hello, Web"></Article>
     contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+      
+      console.log('Search onUpdate : searchTitle = ',searchTitle);
+      var ori_topic_len = topics.length;
+      let ori_topics = [...topics];
+      topics.length = 0; //배열 초기화
+
+      console.log('topics.length = ', topics.length);
+      var countId = 1;
+      for(let i=0; i<ori_topic_len; i++){
+        // console.log('now topic = ', ori_topics[i]);
+        if(ori_topics[i].title.indexOf(searchTitle) !== -1){ //포함된 문자열이 없는 경우 -1 반환
+          let newTopic = {id:countId, title:ori_topics[i].title, body:ori_topics[i].body};
+          console.log('newTopic = ', newTopic);
+          countId ++;
+          topics.push(newTopic);
+          if(i>ori_topic_len+1){
+            break;
+          }
+        }else{
+          // topics.push({id:0, title: '검색결과가 없습니다.', body:'없어!'});
+        }
+      }
+      console.log('topics = ', topics);
+      setTopics(topics);
       setMode('SEARCH');
     }}></Search>
-  }else if(mode === 'READ'){
+  }
+  else if(mode === 'READ'){
     let title, body = null;
     for(let i=0; i<topics.length; i++){
       if(topics[i].id === _id){
@@ -165,7 +189,8 @@ function App() {
       setTopics(topics);
       setMode('WELCOME');
     }}>삭제</button>
-  }else if(mode === 'CREATE'){
+  }
+  else if(mode === 'CREATE'){
     content = <Create onCreate={(_title, _body)=>{
       const newTopic = {id:nextId, title:_title, body:_body};
       const newTopics = [...topics]; //배열은 [...배열이름]을 사용해 복제해 사용해야함
@@ -174,7 +199,8 @@ function App() {
       setId(nextId);
       setNextId(nextId+1);
     }}></Create>
-  }else if(mode === 'UPDATE'){
+  }
+  else if(mode === 'UPDATE'){
     let title, body = null;
     for(let i=0; i<topics.length; i++){
       if(topics[i].id === _id){
@@ -191,13 +217,35 @@ function App() {
     setTopics(topics);
     setMode('READ');
     }}></Update>
-  }else if(mode === 'SEARCH'){
-    // let searchTitle;
-    
-    contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
-      // setMode('SEARCH');
-      console.log('searchTitle = ',searchTitle);
-    }}></Search>
+  }
+  else if(mode === 'SEARCH'){
+    setMode('WELCOME');
+    // contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+      // console.log('Search onUpdate : searchTitle = ',searchTitle);
+      // var ori_topic_len = topics.length;
+      // let ori_topics = [...topics];
+      // topics.length = 0; //배열 초기화
+
+      // console.log('topics.length = ', topics.length);
+      // var countId = 1;
+      // for(let i=0; i<ori_topic_len; i++){
+      //   // console.log('now topic = ', ori_topics[i]);
+      //   if(ori_topics[i].title.indexOf(searchTitle) !== -1){ //포함된 문자열이 없는 경우 -1 반환
+      //     let newTopic = {id:countId, title:ori_topics[i].title, body:ori_topics[i].body};
+      //     console.log('newTopic = ', newTopic);
+      //     countId ++;
+      //     topics.push(newTopic);
+      //     if(i>ori_topic_len+1){
+      //       break;
+      //     }
+      //   }else{
+      //     // topics.push({id:0, title: '검색결과가 없습니다.', body:'없어!'});
+      //   }
+      // }
+      // console.log('topics = ', topics);
+      // setTopics(topics);
+      // setMode('WELCOME');
+    // }}></Search>
   }
   
   return (
