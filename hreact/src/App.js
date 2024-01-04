@@ -85,7 +85,7 @@ function Update(props){
             setTitle(event.target.value);
           }} className='form-control'></input></p>
           <p><textarea name="body" placeholder='body' value={body} onChange={event=>{
-            console.log(event.target.value);
+            // console.log(event.target.value);
             setBody(event.target.value);
           }} className='form-control'></textarea></p>
           <input type='submit' value="수정" className='btn btn-secondary'></input>
@@ -94,6 +94,25 @@ function Update(props){
     </article>
   )
 }
+
+function Search(props){
+  const [searchTitle, setsearchTitle] = useState(props.searchTitle);
+  return(
+    <form onSubmit={event=>{
+      event.preventDefault(); //submit 후 reload되는걸 막기위해
+      const searchTitle = event.target.searchTitle.value;
+      props.onUpdate(searchTitle);
+    }}>
+      <input type='text' name ="searchTitle" value={searchTitle} onChange={event=>{
+            console.log(event.target.value);
+            // setTitle(event.target.value);
+          }}></input>
+      <input type='submit' value="검색"></input>
+    </form>
+    
+  )
+}
+
 function App() {
   // const _mode = useState('WELCOME'); //_mode를 state(상태)로 업그레이드, import {useState} from 'react',
   const [mode, setMode] = useState('WELCOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
@@ -111,6 +130,8 @@ function App() {
   let content = null;
   let contextControl = null;
   let contextDelete = null;
+  let contextSearch = null;
+  let searchTitle = null;
   // const topics =[
   //   {id:1, title:'html', body:'html is ...'},
   //   {id:2, title:'css', body:'css is ...'},
@@ -119,6 +140,9 @@ function App() {
   
   if(mode === 'WELCOME'){
     content = <Article title="web" body="Hello, Web"></Article>
+    contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+      setMode('SEARCH');
+    }}></Search>
   }else if(mode === 'READ'){
     let title, body = null;
     for(let i=0; i<topics.length; i++){
@@ -167,6 +191,13 @@ function App() {
     setTopics(topics);
     setMode('READ');
     }}></Update>
+  }else if(mode === 'SEARCH'){
+    // let searchTitle;
+    
+    contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+      // setMode('SEARCH');
+      console.log('searchTitle = ',searchTitle);
+    }}></Search>
   }
   
   return (
@@ -174,16 +205,14 @@ function App() {
       <Header title="WEB" onChangeMode={()=>{
         setMode('WELCOME');
       }}></Header>
+      {contextSearch}
+      
       <Nav topics ={topics} onChangeMode={(_id)=>{
         setMode('READ');
         setId(_id);
       }}></Nav>
       {content}
-      {/* <Article></Article> */}
-      {/* <a href='/create' onClick={event=>{
-        event.preventDefault();
-        setMode('CREATE');
-      }}>create</a> */}
+      
       <button onClick={event=>{
         event.preventDefault();
         setMode('CREATE');
