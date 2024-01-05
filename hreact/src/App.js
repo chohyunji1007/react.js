@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+
 
 function Header(props){ //사용자 정의 태그(컴포턴트)는 대문자로 시작 해야함
   // console.log('props title=', props.title)
@@ -116,51 +117,70 @@ function App() {
   // const _mode = useState('WELCOME'); //_mode를 state(상태)로 업그레이드, import {useState} from 'react',
   const [mode, setMode] = useState('WELCOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
   const [_id, setId] = useState(null); //1.2. .. 클릭한 id값 받아올때 사용하는 변수
-  const [topics, setTopics] = useState([
-    {id:1, title:'html', body:'html is ...'},
-    {id:2, title:'css', body:'css is ...'},
-    {id:3, title:'js', body:'js is ...'}
-  ]);
-  const [nextId, setNextId] = useState(4); //초기값 초기화!
+  const [topics, setTopics] = useState([]);
+  // useState([
+  //   {id:1, title:'html', body:'html is ...'},
+  //   {id:2, title:'css', body:'css is ...'},
+  //   {id:3, title:'js', body:'js is ...'}
+  // ]);
+  // const [nextId, setNextId] = useState(4); //초기값 초기화!
   
   // _mode[0]:데이터, [1]:데이터 상태의 값을 변경할 때 사용하는 함수
   // [0]: state 값, [1] : state 값을 변경할 때 사용할 함수
 
+  var nextId = 0;
   let content = null;
   let contextControl = null;
   let contextDelete = null;
   let contextSearch = null;
   let searchTitle = undefined;
-  // const topics =[
-  //   {id:1, title:'html', body:'html is ...'},
-  //   {id:2, title:'css', body:'css is ...'},
-  //   {id:3, title:'js', body:'js is ...'}
-  // ]
-  
+
+  useEffect(()=>{ //dom 업데이트 후 불러냄
+    var geturl = 'http://localhost:3001/topics'
+    if(searchTitle !== undefined){
+      geturl+='?title='+searchTitle;
+    }
+    console.log('geturl = ', geturl);
+    fetch(geturl)
+    .then(res =>{
+      return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+    }).then(data => {
+      setTopics(data);
+    })
+  }, []);
+
+  console.log('current mode = ', mode);
   if(mode === 'WELCOME'){
+    
     content = <Article title="web" body="Hello, Web"></Article>
     contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
       
       console.log('Search onUpdate : searchTitle = ',searchTitle);
+      if(searchTitle==='' || searchTitle===undefined){
+        setMode('SEARCH');
+      }
       var ori_topic_len = topics.length;
       let ori_topics = [...topics];
       topics.length = 0; //배열 초기화
 
-      console.log('topics.length = ', topics.length);
+      // console.log('topics.length = ', topics.length);
       var countId = 1;
       for(let i=0; i<ori_topic_len; i++){
         // console.log('now topic = ', ori_topics[i]);
         if(ori_topics[i].title.indexOf(searchTitle) !== -1){ //포함된 문자열이 없는 경우 -1 반환
           let newTopic = {id:countId, title:ori_topics[i].title, body:ori_topics[i].body};
-          console.log('newTopic = ', newTopic);
+          // console.log('newTopic = ', newTopic);
           countId ++;
           topics.push(newTopic);
           if(i>ori_topic_len+1){
             break;
           }
         }else{
-          // topics.push({id:0, title: '검색결과가 없습니다.', body:'없어!'});
+          
         }
+      }
+      if(topics.length === 0){
+        topics.push({id:0, title: '검색 결과가 없습니다.', body:'없어!'});
       }
       console.log('topics = ', topics);
       setTopics(topics);
@@ -192,12 +212,14 @@ function App() {
   }
   else if(mode === 'CREATE'){
     content = <Create onCreate={(_title, _body)=>{
+      nextId = topics.length+1;
       const newTopic = {id:nextId, title:_title, body:_body};
       const newTopics = [...topics]; //배열은 [...배열이름]을 사용해 복제해 사용해야함
       newTopics.push(newTopic);
       setTopics(newTopics);
-      setId(nextId);
-      setNextId(nextId+1);
+      // setId(nextId);
+      // setNextId(nextId+1);
+      nextId++;
     }}></Create>
   }
   else if(mode === 'UPDATE'){
@@ -210,42 +232,14 @@ function App() {
     }
 
     content = <Update title={title} body={body} onUpdate={(title, body)=>{
-      // console.log(title, body);
     const updateTopic = {id:_id, title:title, body:body};
     topics.splice(_id-1, 1, updateTopic);
-    // console.log(topics);
     setTopics(topics);
     setMode('READ');
     }}></Update>
   }
   else if(mode === 'SEARCH'){
     setMode('WELCOME');
-    // contextSearch = <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
-      // console.log('Search onUpdate : searchTitle = ',searchTitle);
-      // var ori_topic_len = topics.length;
-      // let ori_topics = [...topics];
-      // topics.length = 0; //배열 초기화
-
-      // console.log('topics.length = ', topics.length);
-      // var countId = 1;
-      // for(let i=0; i<ori_topic_len; i++){
-      //   // console.log('now topic = ', ori_topics[i]);
-      //   if(ori_topics[i].title.indexOf(searchTitle) !== -1){ //포함된 문자열이 없는 경우 -1 반환
-      //     let newTopic = {id:countId, title:ori_topics[i].title, body:ori_topics[i].body};
-      //     console.log('newTopic = ', newTopic);
-      //     countId ++;
-      //     topics.push(newTopic);
-      //     if(i>ori_topic_len+1){
-      //       break;
-      //     }
-      //   }else{
-      //     // topics.push({id:0, title: '검색결과가 없습니다.', body:'없어!'});
-      //   }
-      // }
-      // console.log('topics = ', topics);
-      // setTopics(topics);
-      // setMode('WELCOME');
-    // }}></Search>
   }
   
   return (
