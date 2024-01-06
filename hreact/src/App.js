@@ -1,5 +1,5 @@
 import logo from './logo.svg';
-import './App.css';
+import './/css/App.css';
 import {useEffect, useState} from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'; //페이지 이동에 사용되는 router
 import Login from './login'

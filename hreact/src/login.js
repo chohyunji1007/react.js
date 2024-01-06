@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-// import './App.css';
+import './css/Login.css';
 import {useEffect, useState} from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'; //페이지 이동에 사용되는 router
 import { useCookies } from 'react-cookie'
@@ -23,8 +23,10 @@ export default function Login(){
     return (
         
         <div className='login'>
+            <div className='form-group'>
             <h1> 로그인 </h1>
-            <form onSubmit={event=>{
+            <div className='blank'></div>
+            <form className="loginForm" onSubmit={event=>{
                 event.preventDefault(); //submit 후 reload되는걸 막기위해
                 const userID = event.target.userID.value;
                 const PW = event.target.PW.value;
@@ -55,15 +57,19 @@ export default function Login(){
                 })
                 
             }}>
-                <label>아이디</label>
-                <input type="text" name="userID" placeholder='ID' required></input>
-                <label>비밀번호</label>
-                <input type="password" name="PW" placeholder='PW' required></input>
-                <input type="submit" value="로그인"></input>
-                <input type="button" value="회원가입" onClick={goSignup}></input>
+                
+                <label className='form-label'>아이디</label>
+                <input type="text" name="userID" className="form-control" placeholder='' required></input>
+                <label className='form-label'>비밀번호</label>
+                
+                <input type="password" name="PW" className="form-control" placeholder='' required></input>
+                
+                <input type="submit" className="btn loginBtn" value="로그인" style={{marginTop : "30%"}}></input>
+                <a type="button" value="회원가입" onClick={goSignup}> 회원가입 </a>
             </form>
-            
-            <button onClick={gohome}>홈으로</button>
+            <div className='blank'></div>
+            <button className="btn btn-secondary" onClick={gohome}>홈으로</button>
+            </div>
         </div>
     )
 }

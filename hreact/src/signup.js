@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-// import './App.css';
+import './css/Signup.css';
 import {useEffect, useState} from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'; //페이지 이동에 사용되는 router
 // import { useCookies } from 'react-cookie'
@@ -14,55 +14,72 @@ export default function Signup(){
     function gohome(){
         movePage('/');
     }
+    function goLogin(){
+      movePage('/login');
+    }
     let nextId =0;
 
     return (
         
-        <div className='signup'>
-            <h1> 회원가입 </h1>
-            <form onSubmit={event=>{
+      <div className='login'>
+        <div className='form-group'>
+        <h1> 회원가입 </h1>
+        <div className='blank'></div>
+            <form className="loginForm" onSubmit={event=>{
                 event.preventDefault(); //submit 후 reload되는걸 막기위해
                 const userID = event.target.userID.value;
                 const PW = event.target.PW.value;
                 const userEmail = event.target.userEmail.value;
                 
-                fetch(geturl) //next id를 얻어오기 위해
-                // .then(res =>{
-                //     return res.json();
-                // }).then(data => {
-                //     console.log("data = ", data);
-                // })
-                fetch(geturl, {
-                    method : 'POST',
-                    headers : {
-                      "Content-Type" : "application/json",
-                    },
-                    body : JSON.stringify({
-                    //   id:nextId,
-                      userID:userID,
-                      userEmail : userEmail,
-                      PW : PW
+                geturl +='/?userID=' + userID;
+                fetch(geturl)
+                .then(res =>{
+                    return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+                }).then(data => {
+                  if(data.length >0){
+                    // console.log("아이디 중복!!");
+                    alert("아이디가 이미 존재 함~ 다른 아이디로 가입해~");
+                  }else{
+                    console.log("가입 가능!!");
+                  //   fetch(geturl, {
+                  //   method : 'POST',
+                  //   headers : {
+                  //     "Content-Type" : "application/json",
+                  //   },
+                  //   body : JSON.stringify({
+                  //   //   id:nextId,
+                  //     userID:userID,
+                  //     userEmail : userEmail,
+                  //     PW : PW
                       
-                    }),
-                  }).then(res =>{
-                    if(res.ok){
-                      console.log("회원가입 완료!");
-                    }
-                  })
+                  //   }),
+                  // }).then(res =>{
+                  //   if(res.ok){
+                  //     console.log("회원가입 완료!");
+                  //   }
+                  // })
+                  }
+                    
+                });
+                
+                
                 
             }}>
-                <label>아이디</label>
-                <input type="text" name="userID" placeholder='ID' required></input>
-                <label>비밀번호</label>
-                <input type="password" name="PW" placeholder='PW' required></input>
-                <label>이메일</label>
-                <input type="email" name="userEmail" placeholder='Email'></input>
+                <label className='form-label'>아이디  <b>*</b></label>
+                <input type="text" name="userID" className="form-control" placeholder='' required></input>
+                <label className='form-label'>비밀번호  <b>*</b></label>
+                <input type="password" name="PW" className="form-control" placeholder='' required></input>
+                <label className='form-label'>이메일</label>
+                <input type="email" name="userEmail" className="form-control" placeholder=''></input>
                 
-                <input type="submit" value="회원가입"></input>
+                <input type="submit" className='btn loginBtn' value="회원가입" style={{marginTop : "20%"}}></input>
+                <a type="button" value="회원가입" onClick={goLogin}> 로그인 </a>
             </form>
-            
-            <button onClick={gohome}>홈으로</button>
+            <div className='blank'></div>
+            <button className='btn btn-secondary' onClick={gohome}>홈으로</button>
         </div>
+          
+      </div>
     )
 }
 
