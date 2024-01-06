@@ -1,7 +1,51 @@
 {
-    "topics": [
-        {"id":1, "title":"html", "body":"html is ..."},
-        {"id":2, "title":"css", "body":"css is ..."},
-        {"id":3, "title":"js", "body":"js is ..."}
-    ]
+  "topics": [
+    {
+      "id": 1,
+      "title": "html",
+      "body": "html is ..."
+    },
+    {
+      "id": 2,
+      "title": "css",
+      "body": "css is ..."
+    },
+    {
+      "id": 3,
+      "title": "js",
+      "body": "js is ..."
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "userID": "cho",
+      "userEmail": "cho@naver.com",
+      "PW": "111"
+    },
+    {
+      "id": 2,
+      "userID": "kim",
+      "userEmail": "kim@naver.com",
+      "PW": "222"
+    },
+    {
+      "id": 3,
+      "userID": "cho2",
+      "PW": "111",
+      "userEmail": "cho2@mail.com"
+    },
+    {
+      "userID": "cho3",
+      "userEmail": "1@mail.com",
+      "PW": "111",
+      "id": 4
+    },
+    {
+      "userID": "cho4",
+      "userEmail": "1@mail.com",
+      "PW": "111",
+      "id": 5
+    }
+  ]
 }
