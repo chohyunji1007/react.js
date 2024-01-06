@@ -117,7 +117,7 @@ function Search(props){
 
 function Home() {
     const [cookies, setCookie, removeCookie] = useCookies()
-    console.log('Home cookies = ', cookies);
+    // console.log('Home cookies = ', cookies);
   // const _mode = useState('WELCOME'); //_mode를 state(상태)로 업그레이드, import {useState} from 'react',
   const [mode, setMode] = useState('WELCOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
   const [_id, setId] = useState(null); //1.2. .. 클릭한 id값 받아올때 사용하는 변수
@@ -141,12 +141,13 @@ function Home() {
   let geturl = 'http://localhost:3001/topics';
 
   useEffect(()=>{ //dom 업데이트(마운트 <-> 언마운트) 후 불러냄
-    console.log('useEffect cookies = ', cookies);
-    console.log('cookies  = ', cookies["accessToken"]);
+    // console.log('useEffect cookies = ', cookies);
+    // console.log('cookies  = ', cookies["accessToken"]);
     // geturl = 'http://localhost:3001/topics'
-    if(searchTitle !== undefined){
-      geturl+='?title='+searchTitle;
-    }
+    console.log('current mode = ', mode);
+    // if(searchTitle !== undefined){
+    //   geturl+='?title='+searchTitle;
+    // }
     // console.log('geturl = ', geturl);
     fetch(geturl)
     .then(res =>{
@@ -233,8 +234,8 @@ function Home() {
     content = <Update title={title} body={body} onUpdate={(title, body)=>{
     
     let updateurl = geturl +'/'+ _id;
-    console.log('geturl = ', geturl);
-    console.log('updateurl = ', updateurl);
+    // console.log('geturl = ', geturl);
+    // console.log('updateurl = ', updateurl);
     fetch(updateurl,{
       method : 'PUT',
       headers : {
@@ -268,32 +269,29 @@ function Home() {
 
   return (
     <div className="Home">
-      <Header title="WEB" onChangeMode={()=>{
+        <Header title="WEB" onChangeMode={()=>{
         setMode('WELCOME');
-      }}></Header>
-      <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
-      
-      var ori_topic_len = topics.length;
-      let ori_topics = [...topics];
-      topics.length = 0; //배열 초기화
+        }}></Header>
+        <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+            
+            console.log('ori searchtitle = ', searchTitle);
+            if(searchTitle ==='' || searchTitle === undefined){
+                console.log('hi');
+                setMode('WELCOME');
+            }
+            let searchData = '';
+            fetch(geturl)
+            .then(res =>{
+              return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+            }).then(data => {
+                searchData = data.filter(object =>{
+                    if(object.title.indexOf(searchTitle) > -1){
+                        return object
+                    }
+                })
+                setTopics(searchData);
+            })
 
-      var countId = 1;
-      for(let i=0; i<ori_topic_len; i++){
-        if(ori_topics[i].title.indexOf(searchTitle) !== -1){ //포함된 문자열이 없는 경우 -1 반환
-          let newTopic = {id:countId, title:ori_topics[i].title, body:ori_topics[i].body};
-          countId ++;
-          topics.push(newTopic);
-          if(i>ori_topic_len+1){
-            break;
-          }
-        }else{
-          
-        }
-      }
-      if(topics.length === 0){
-        topics.push({id:0, title: '검색 결과가 없습니다.', body:'없어!'});
-      }
-      setTopics(topics);
       setMode('SEARCH');
     }}></Search>
         {cookies["accessToken"]!==undefined ? <label>{cookies["accessToken"]} 님</label> : null}
