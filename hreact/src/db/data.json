@@ -4,31 +4,60 @@
       "id": 1,
       "title": "html",
       "body": "html is ...",
-      "writer": "cho"
+      "writer": "cho",
+      "write_time": "1월6일 오후 5시 30분"
     },
     {
       "id": 2,
       "title": "css",
       "body": "css is ...",
-      "writer": "cho"
+      "writer": "cho2",
+      "write_time": "1월6일 오후 5시 30분"
     },
     {
       "id": 3,
       "title": "js",
       "body": "js is ...",
-      "writer": "cho"
+      "writer": "cho3",
+      "write_time": "1월6일 오후 5시 30분"
     },
     {
       "id": 4,
       "title": "2",
       "body": "2",
-      "writer": "cho"
+      "writer": "cho4",
+      "write_time": "1월6일 오후 5시 30분"
     },
     {
       "id": 5,
       "title": "3",
       "body": "3",
-      "writer": "cho"
+      "writer": "cho2",
+      "write_time": "1월6일 오후 5시 30분"
+    },
+    {
+      "id": 6,
+      "title": "4",
+      "body": "4",
+      "write_time": "2024. 1. 7. 오후 10:59:54"
+    },
+    {
+      "id": 7,
+      "title": "5",
+      "body": "5",
+      "write_time": "2024. 1. 7. 오후 11:00:22"
+    },
+    {
+      "id": 8,
+      "title": "6",
+      "body": "6",
+      "write_time": "2024. 1. 7. 오후 11:00:43"
+    },
+    {
+      "id": 9,
+      "title": "7",
+      "body": "7",
+      "write_time": "2024. 1. 7. 오후 11:00:57"
     }
   ],
   "members": [
@@ -65,23 +94,22 @@
   ],
   "comment": [
     {
-        "writer" : "cho",
-        "post_id" : "1",
-        "comment" : "댓글 1",
-        "write_time" : "1월6일 오후 5시 30분"
+      "writer": "cho",
+      "post_id": "1",
+      "comment": "댓글 1",
+      "write_time": "1월6일 오후 5시 30분"
     },
     {
-        "writer" : "cho2",
-        "post_id" : "1",
-        "comment" : "댓글 2",
-        "write_time" : "1월6일 오후 9시 10분"
-    }
-    ,
+      "writer": "cho2",
+      "post_id": "1",
+      "comment": "댓글 2",
+      "write_time": "1월6일 오후 9시 10분"
+    },
     {
-        "writer" : "cho4",
-        "post_id" : "2",
-        "comment" : "댓글 1",
-        "write_time" : "1월6일 오후 5시 30분"
+      "writer": "cho4",
+      "post_id": "2",
+      "comment": "댓글 1",
+      "write_time": "1월6일 오후 5시 30분"
     }
   ]
 }

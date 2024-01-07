@@ -42,3 +42,8 @@ body, html, #root ,.login{
 .form-label{
     margin : 3% 0 3% 0;
 }
+.login-header{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}

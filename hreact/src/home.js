@@ -3,11 +3,11 @@ import './css/Home.css';
 import {useEffect, useState} from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'; //페이지 이동에 사용되는 router
 import { useCookies } from 'react-cookie'
-
+import Pagination from "react-js-pagination"
 function Header(props){ //사용자 정의 태그(컴포턴트)는 대문자로 시작 해야함
 	return(
 		<header>
-	    <h1><a href='/' onClick={(event)=>{
+	    <h1><a className='nav-brand' href='/' style={{color : "#fff", textDecoration : "none", marginLeft:"10px"}}onClick={(event)=>{
         event.preventDefault(); // 1. onClick 이벤트에 콜백 함수로 들어간 함수가 호출될 때 event 객체를 첫 번째 파라미터로 주입
         // 2. a 태그가 동작하는 기본 동작을 막음
         props.onChangeMode(); // 3. Header 컴포넌트에 있는 onChangeMode를 가리키고 이 함수 호출 
@@ -19,18 +19,24 @@ function Post(props){
     const lis=[]
     for(let i=0; i<props.topics.length; i++){
         let t = props.topics[i];
-        lis.push(<li key={t.id}><a href={'/read/'+t.id} onClick={(event)=>{
+
+        lis.push(<tr key={t.id}><td>{i+1}</td><td><a href={'/read/'+t.id} onClick={(event)=>{
             event.preventDefault();
             props.onChangeMode(t.id); //t.id, event.target.id 가능, event.target = a tag
         
-    }}>{t.title}</a></li>)
+    }}>{t.title}</a></td><td>{t.writer}</td><td>{t.write_time}</td></tr>)
     }
     return(
-    <nav>
-        <ol>
-            {lis}
-        </ol>
-    </nav>
+        <div className="container">
+            <table className='table table-hover htable'>
+                <tbody>
+                    <tr><td>번호</td><td>제목</td><td>작성자</td><td>작성 시간</td></tr>
+                    {lis}
+                </tbody>
+            </table>
+            <div id="pagination"></div>
+        </div>
+    
     )
 }
 
@@ -110,12 +116,12 @@ function Search(props){
         event.preventDefault(); //submit 후 reload되는걸 막기위해
         const searchTitle = event.target.searchTitle.value;
         props.onUpdate(searchTitle);
-    }}>
-        <input type='text' name ="searchTitle" value={searchTitle} onChange={event=>{
+    }} style={{display : "flex"}}>
+        <input type='text' name ="searchTitle" className="form-control" value={searchTitle} onChange={event=>{
             setsearchTitle(searchTitle);
             }}></input>
-        <input type='submit' value="검색"></input>
-        <input type="button" value="X" onClick={function(){ window.location.reload(); }}></input>
+        <input type='submit' className="btn btn-primary" value="검색" style={{marginLeft:"10px"}}></input>
+        <input type="button" className="btn btn-primary" value="X" style={{marginLeft:"10px", marginRight:"10px"}} onClick={function(){ window.location.reload(); }}></input>
     </form>
     )
 }
@@ -132,10 +138,11 @@ function Comment(props){
 function CommentList(props){
     let commenturl = "http://localhost:3001/comment"
     let searchData = null;
-    const lis=[];
+    let lis=[];
     const [commentData, setCD] = useState();
     
     useEffect(()=>{
+        
         fetch(commenturl)
         .then(res =>{
             return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
@@ -150,7 +157,9 @@ function CommentList(props){
                 }    
             })
             // console.log('searchData2 = ', searchData);
-            if(searchData.length>0){
+            // console.log('lis.len = ', lis.length)
+            if(searchData.length>0 && lis.length < searchData.length+1){
+
                 for(let i=0; i<searchData.length; i++){
                     let t = searchData[i];
                     // console.log('t=',t);
@@ -159,8 +168,12 @@ function CommentList(props){
                 }
             }
             setCD(lis);
+            // console.log(lis)
+            if(lis.length === 0){
+                lis.push(<Comment key={'comment_0'} writer={''} write_time={''} comment={"작성된 댓글이 없습니다."}></Comment>);
+            }
         })
-    })
+    });
     return(
         <div id="comment_list">
             {commentData}
@@ -169,19 +182,19 @@ function CommentList(props){
      
 }
 
-function Nav(){
-    return(
-        <div className='container'>
-            <a className='navbar-brand' href='#'>hi?</a>
-        </div>
-    )
-}
+// function Nav(){
+//     return(
+//         <div className='container'>
+//             <a className='navbar-brand' href='#'>hi?</a>
+//         </div>
+//     )
+// }
 
 function Home() {
     const [cookies, setCookie, removeCookie] = useCookies()
     // console.log('Home cookies = ', cookies);
     // const _mode = useState('WELCOME'); //_mode를 state(상태)로 업그레이드, import {useState} from 'react',
-    const [mode, setMode] = useState('WELCOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
+    const [mode, setMode] = useState('HOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
     const [_id, setId] = useState(null); //1.2. .. 클릭한 id값 받아올때 사용하는 변수
     const [topics, setTopics] = useState([]);
     // const [commentData, setCD ] = useState([]);
@@ -233,7 +246,7 @@ function Home() {
     //페이지 이동
 
     // console.log('current mode = ', mode);
-    if(mode === 'WELCOME'){
+    if(mode === 'HOME'){
 
     // content = <Article title="web" body="Hello, Web"></Article>
 
@@ -252,23 +265,24 @@ function Home() {
             event.preventDefault();
             setMode('UPDATE');
         }} className='btn btn-success'>수정</a>
-
-        // comment_text = <CommentList selectPostID = {_id}></CommentList>
-
+        
+        comment_text = <CommentList selectPostID = {_id}></CommentList>
+        // console.log('comment_text = ', comment_text);
         contextDelete = <button onClick={()=>{
 
             let delurl = geturl +'/'+ _id;
             fetch(delurl,{
                 method : "DELETE",
                 });
-                setMode('WELCOME');
+                setMode('HOME');
         }} className='btn btn-danger'>삭제</button>
     }
     else if(mode === 'CREATE'){
         
         content = <Create onCreate={(_title, _body)=>{
             nextId = topics.slice(-1)[0].id +1;
-
+            var today = new Date();
+            var get_now = today.toLocaleString();
             fetch(geturl, {
                 method : 'POST',
                 headers : {
@@ -278,12 +292,13 @@ function Home() {
                     id:nextId,
                     title:_title,
                     body : _body,
-                    writer : cookies["accessToken"]
+                    writer : cookies["accessToken"],
+                    write_time : get_now
                 }),
                 }).then(res =>{
                 if(res.ok){
                     console.log("데이터 추가 완료!");
-                    setMode('READ');
+                    window.location.reload();
                 }
             })
         }}></Create>
@@ -317,42 +332,49 @@ function Home() {
         }}></Update>
     }
     else if(mode === 'SEARCH'){
-        setMode('WELCOME');
+        setMode('HOME');
     }
 
     
 
     return (
     <div className="Home">
-        <Nav className='navbar navbar-expand-lg navbar-dark bg-dark'></Nav>
-        <Header title="HOME" onChangeMode={()=>{
-        setMode('WELCOME');
-        }}></Header>
-        <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+        <div className='navbar navbar-expand-lg navbar-dark bg-dark'>
+            <Header title="H" onChangeMode={()=>{
+            setMode('HOME');
+            }}></Header>
+            <div className='home_loginBtn'>
+                <input type="button" value={cookies["accessToken"]===undefined ? "로그인":"로그아웃"} 
+                onClick={cookies["accessToken"]===undefined ? goLogin:goLogout} className='btn btn-secondary'></input>
+                <input type="button" value="회원가입" onClick={goSignup} className='btn' style={{color:"#fff"}}></input>
+            </div>
+        </div>
             
-            if(searchTitle ==='' || searchTitle === undefined){
-                console.log('hi');
-                setMode('WELCOME');
-            }
-            let searchData = '';
-            fetch(geturl)
-            .then(res =>{
-                return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
-            }).then(data => {
-                searchData = data.filter(object =>{
-                    if(object.title.indexOf(searchTitle) > -1){
-                        return object
-                    }
-                })
-                setTopics(searchData);
-            })
-
-        setMode('SEARCH');
-    }}></Search>
+        
         {cookies["accessToken"]!==undefined ? <label>{cookies["accessToken"]} 님</label> : null}
-        <input type="button" value={cookies["accessToken"]===undefined ? "로그인":"로그아웃"} 
-        onClick={cookies["accessToken"]===undefined ? goLogin:goLogout}></input>
-        <input type="button" value="회원가입" onClick={goSignup}></input>
+            <div className='nameAndSearch'>
+                <div className='postName'>게시물 목록</div>
+                <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+                    
+                    if(searchTitle ==='' || searchTitle === undefined){
+                        setMode('HOME');
+                    }
+                    let searchData = '';
+                    fetch(geturl)
+                    .then(res =>{
+                        return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+                    }).then(data => {
+                        searchData = data.filter(object =>{
+                            if(object.title.indexOf(searchTitle) > -1){
+                                return object
+                            }
+                        })
+                        setTopics(searchData);
+                    })
+                    setMode('SEARCH');
+                }}></Search>
+            </div>
+        
 
         <button onClick={event=>{
             event.preventDefault();
@@ -365,8 +387,8 @@ function Home() {
             setId(_id);
         }}></Post>
         {content}
-        {/* {comment_text} */}
-        <CommentList selectPostID = {_id}></CommentList>
+        {comment_text}
+        {/* <CommentList selectPostID = {_id}></CommentList> */}
         
         
     </div>
