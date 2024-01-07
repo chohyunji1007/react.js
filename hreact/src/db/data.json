@@ -62,5 +62,26 @@
       "PW": "111",
       "id": 5
     }
+  ],
+  "comment": [
+    {
+        "writer" : "cho",
+        "post_id" : "1",
+        "comment" : "댓글 1",
+        "write_time" : "1월6일 오후 5시 30분"
+    },
+    {
+        "writer" : "cho2",
+        "post_id" : "1",
+        "comment" : "댓글 2",
+        "write_time" : "1월6일 오후 9시 10분"
+    }
+    ,
+    {
+        "writer" : "cho4",
+        "post_id" : "2",
+        "comment" : "댓글 1",
+        "write_time" : "1월6일 오후 5시 30분"
+    }
   ]
 }

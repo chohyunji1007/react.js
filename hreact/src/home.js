@@ -15,13 +15,13 @@ function Header(props){ //사용자 정의 태그(컴포턴트)는 대문자로 
 	  </header>
 	)
 }
-function Nav(props){
+function Post(props){
     const lis=[]
     for(let i=0; i<props.topics.length; i++){
-    let t = props.topics[i];
-    lis.push(<li key={t.id}><a href={'/read/'+t.id} onClick={(event)=>{
-        event.preventDefault();
-        props.onChangeMode(t.id); //t.id, event.target.id 가능, event.target = a tag
+        let t = props.topics[i];
+        lis.push(<li key={t.id}><a href={'/read/'+t.id} onClick={(event)=>{
+            event.preventDefault();
+            props.onChangeMode(t.id); //t.id, event.target.id 가능, event.target = a tag
         
     }}>{t.title}</a></li>)
     }
@@ -65,7 +65,7 @@ function Create(props){
                 const body = event.target.body.value;
                 props.onCreate(title, body);
             }}>
-            <div className='form-group'>
+            <div>
                 <p><input type='text' name="title" placeholder='title' className='form-control'></input></p>
                 <p><textarea name="body" placeholder='body' className='form-control'></textarea></p>
                 <input type='submit' value="추가" className='btn btn-secondary'></input>
@@ -91,11 +91,9 @@ function Update(props){
         }}>
         <div className='form-group'>
             <p><input type='text' name="title" placeholder='title' value={title} onChange={event=>{
-            // console.log(event.target.value);
             setTitle(event.target.value);
             }} className='form-control'></input></p>
             <p><textarea name="body" placeholder='body' value={body} onChange={event=>{
-            // console.log(event.target.value);
             setBody(event.target.value);
             }} className='form-control'></textarea></p>
             <input type='submit' value="수정" className='btn btn-secondary'></input>
@@ -114,7 +112,6 @@ function Search(props){
         props.onUpdate(searchTitle);
     }}>
         <input type='text' name ="searchTitle" value={searchTitle} onChange={event=>{
-            // console.log('input onChange : searchTitle =',event.target.value);
             setsearchTitle(searchTitle);
             }}></input>
         <input type='submit' value="검색"></input>
@@ -123,7 +120,62 @@ function Search(props){
     )
 }
 
+function Comment(props){
+    return(
+        <div>
+            <span >{props.writer}</span>
+            <span >{props.write_time}</span>
+            <span>{props.comment}</span>
+        </div>  
+    )
+}
+function CommentList(props){
+    let commenturl = "http://localhost:3001/comment"
+    let searchData = null;
+    const lis=[];
+    const [commentData, setCD] = useState();
+    
+    useEffect(()=>{
+        fetch(commenturl)
+        .then(res =>{
+            return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+        }).then(data => {
+            // console.log('data=',data);
+            // console.log('_id=',props.selectPostID);
+            let searchPostID = props.selectPostID;
+            
+            searchData = data.filter(object =>{
+                if(object.post_id.indexOf(searchPostID)>-1){
+                    return object
+                }    
+            })
+            // console.log('searchData2 = ', searchData);
+            if(searchData.length>0){
+                for(let i=0; i<searchData.length; i++){
+                    let t = searchData[i];
+                    // console.log('t=',t);
+                    // lis.push(<div key={'comment_'+i}><span>{t.writer}</span><span>{t.write_time}</span><span>{t.comment}</span></div>);
+                    lis.push(<Comment key={'comment_'+i} writer={t.writer} write_time={t.write_time} comment={t.comment}></Comment>);
+                }
+            }
+            setCD(lis);
+        })
+    })
+    return(
+        <div id="comment_list">
+            {commentData}
+        </div>
+    )
+     
+}
 
+function Nav(){
+    return(
+        <div className='container'>
+            <a className='navbar-brand' href='#'>hi?</a>
+        </div>
+    )
+}
 
 function Home() {
     const [cookies, setCookie, removeCookie] = useCookies()
@@ -132,6 +184,7 @@ function Home() {
     const [mode, setMode] = useState('WELCOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
     const [_id, setId] = useState(null); //1.2. .. 클릭한 id값 받아올때 사용하는 변수
     const [topics, setTopics] = useState([]);
+    // const [commentData, setCD ] = useState([]);
     // useState([
     //   {id:1, title:'html', body:'html is ...'},
     //   {id:2, title:'css', body:'css is ...'},
@@ -144,24 +197,18 @@ function Home() {
 
     var nextId = 0;
     let content = null;
+    let comment_text = null;
     let contextControl = null;
     let contextDelete = null;
     let contextSearch = null;
     let searchTitle = undefined;
     let geturl = 'http://localhost:3001/topics';
 
-    console.log('current mode = ', mode);    
+    // console.log('current mode = ', mode);    
     useEffect(()=>{ //dom 업데이트(마운트 <-> 언마운트) 후 불러냄
-    // console.log('useEffect cookies = ', cookies);
-    // console.log('cookies  = ', cookies["accessToken"]);
-    // geturl = 'http://localhost:3001/topics'
-        // console.log('current mode = ', mode);
-        // if(searchTitle !== undefined){
-        //   geturl+='?title='+searchTitle;
-        // }
-        // console.log('geturl = ', geturl);
+    
         fetch(geturl)
-        .then(res =>{
+        .then(res => {
             return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
         }).then(data => {
             setTopics(data);
@@ -192,27 +239,29 @@ function Home() {
 
     }
     else if(mode === 'READ'){
-    let title, body = null;
-    for(let i=0; i<topics.length; i++){
-        if(topics[i].id === _id){
-        title = topics[i].title;
-        body = topics[i].body;
+        let title, body = null;
+        let selectPostID = null;
+        for(let i=0; i<topics.length; i++){
+            if(topics[i].id === _id){
+            title = topics[i].title;
+            body = topics[i].body;
+            }
         }
-    }
-    content = <Article title={title} body={body}></Article>
-    contextControl = <a href={'/upate/'+ _id } onClick={event=>{
-        event.preventDefault();
-        setMode('UPDATE');
-    }} className='btn btn-success'>수정</a>
+        content = <Article title={title} body={body}></Article>
+        contextControl = <a href={'/upate/'+ _id } onClick={event=>{
+            event.preventDefault();
+            setMode('UPDATE');
+        }} className='btn btn-success'>수정</a>
 
-    contextDelete = <button onClick={()=>{
-        // topics.splice(_id-1, 1);
-        // setTopics(topics);
-        let delurl = geturl +'/'+ _id;
-        fetch(delurl,{
-            method : "DELETE",
-            });
-            setMode('WELCOME');
+        // comment_text = <CommentList selectPostID = {_id}></CommentList>
+
+        contextDelete = <button onClick={()=>{
+
+            let delurl = geturl +'/'+ _id;
+            fetch(delurl,{
+                method : "DELETE",
+                });
+                setMode('WELCOME');
         }} className='btn btn-danger'>삭제</button>
     }
     else if(mode === 'CREATE'){
@@ -242,46 +291,45 @@ function Home() {
     }
     else if(mode === 'UPDATE'){
     let title, body = null;
-    for(let i=0; i<topics.length; i++){
-        if(topics[i].id === _id){
-        title = topics[i].title;
-        body = topics[i].body;
+        for(let i=0; i<topics.length; i++){
+            if(topics[i].id === _id){
+            title = topics[i].title;
+            body = topics[i].body;
+            }
         }
-    }
 
-    content = <Update title={title} body={body} onUpdate={(title, body)=>{
+        content = <Update title={title} body={body} onUpdate={(title, body)=>{
 
-    let updateurl = geturl +'/'+ _id;
-    // console.log('geturl = ', geturl);
-    // console.log('updateurl = ', updateurl);
-    fetch(updateurl,{
-        method : 'PUT',
-        headers : {
-        'Content-type' : 'application/json',
-        },
-        body : JSON.stringify({
-        // ...topics,
-        title : title,
-        body : body
-        }),
-    })
-    setMode('READ');
-    }}></Update>
+        let updateurl = geturl +'/'+ _id;
+
+        fetch(updateurl,{
+            method : 'PUT',
+            headers : {
+            'Content-type' : 'application/json',
+            },
+            body : JSON.stringify({
+            // ...topics,
+            title : title,
+            body : body
+            }),
+        })
+        setMode('READ');
+        }}></Update>
     }
     else if(mode === 'SEARCH'){
-    setMode('WELCOME');
+        setMode('WELCOME');
     }
 
     
 
     return (
     <div className="Home">
+        <Nav className='navbar navbar-expand-lg navbar-dark bg-dark'></Nav>
         <Header title="HOME" onChangeMode={()=>{
         setMode('WELCOME');
         }}></Header>
         <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
             
-            console.log('ori searchtitle = ', searchTitle);
             if(searchTitle ==='' || searchTitle === undefined){
                 console.log('hi');
                 setMode('WELCOME');
@@ -312,11 +360,14 @@ function Home() {
         }} className='btn btn-primary'>게시물 추가</button>
         {contextControl}
         {contextDelete}
-        <Nav topics ={topics} onChangeMode={(_id)=>{
+        <Post topics ={topics} onChangeMode={(_id)=>{
             setMode('READ');
             setId(_id);
-        }}></Nav>
+        }}></Post>
         {content}
+        {/* {comment_text} */}
+        <CommentList selectPostID = {_id}></CommentList>
+        
         
     </div>
     )
