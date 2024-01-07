@@ -3,7 +3,9 @@ import './css/Home.css';
 import {useEffect, useState} from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'; //페이지 이동에 사용되는 router
 import { useCookies } from 'react-cookie'
-import Pagination from "react-js-pagination"
+// import Pagination from "react-js-pagination"
+import { Pagination } from "./Pagination";
+
 function Header(props){ //사용자 정의 태그(컴포턴트)는 대문자로 시작 해야함
 	return(
 		<header>
@@ -17,8 +19,20 @@ function Header(props){ //사용자 정의 태그(컴포턴트)는 대문자로 
 }
 function Post(props){
     const lis=[]
-    for(let i=0; i<props.topics.length; i++){
-        let t = props.topics[i];
+    const [posts, setPosts] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage, setPostsPerPage] = useState(5);
+
+    useEffect(()=>{
+        // setPosts(props.topics.reverse());
+        setPosts(props.topics);
+    })
+    const firstPostIndex = (currentPage - 1) * postsPerPage;
+    const lastPostIndex = firstPostIndex + postsPerPage;
+    const currentPosts = posts.slice(firstPostIndex, lastPostIndex);
+
+    for(let i=0; i<currentPosts.length; i++){
+        let t = currentPosts[i];
 
         lis.push(<tr key={t.id}><td>{i+1}</td><td><a href={'/read/'+t.id} onClick={(event)=>{
             event.preventDefault();
@@ -27,14 +41,20 @@ function Post(props){
     }}>{t.title}</a></td><td>{t.writer}</td><td>{t.write_time}</td></tr>)
     }
     return(
-        <div className="container">
+        <div className="container post-table">
             <table className='table table-hover htable'>
                 <tbody>
                     <tr><td>번호</td><td>제목</td><td>작성자</td><td>작성 시간</td></tr>
                     {lis}
                 </tbody>
             </table>
-            <div id="pagination"></div>
+            
+            <Pagination
+            postsNum={posts.length}
+            postsPerPage={postsPerPage}
+            setCurrentPage={setCurrentPage}
+            currentPage={currentPage}
+            />
         </div>
     
     )
