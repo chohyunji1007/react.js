@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './css/Home.css';
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useRef } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'; //페이지 이동에 사용되는 router
 import { useCookies } from 'react-cookie'
 // import Pagination from "react-js-pagination"
@@ -84,7 +84,7 @@ function Create(props){
     // }
     return(
         <article style={{width: "500px"}}>
-            <h2> Create </h2>
+            <h4> 게시물 추가 </h4>
             <form onSubmit={event=>{
                 event.preventDefault(); //submit 후 reload되는걸 막기위해
                 const title = event.target.title.value;
@@ -93,7 +93,7 @@ function Create(props){
             }}>
             <div>
                 <p><input type='text' name="title" placeholder='title' className='form-control'></input></p>
-                <p><textarea name="body" placeholder='body' className='form-control'></textarea></p>
+                <p><textarea name="body" placeholder='body' className='form-control' rows='5'></textarea></p>
                 <input type='submit' value="추가" className='btn btn-secondary'></input>
             </div>
     
@@ -108,22 +108,22 @@ function Update(props){
     const [body, setBody] = useState(props.body);
     return(
     <article style={{width: "500px"}}>
-        <h2> Create </h2>
+        <h2> 게시물 수정 </h2>
         <form onSubmit={event=>{
         event.preventDefault(); //submit 후 reload되는걸 막기위해
         const title = event.target.title.value;
         const body = event.target.body.value;
         props.onUpdate(title, body);
         }}>
-        <div className='form-group'>
+        {/* <div className='form-group'> */}
             <p><input type='text' name="title" placeholder='title' value={title} onChange={event=>{
-            setTitle(event.target.value);
+                setTitle(event.target.value);
             }} className='form-control'></input></p>
             <p><textarea name="body" placeholder='body' value={body} onChange={event=>{
-            setBody(event.target.value);
-            }} className='form-control'></textarea></p>
+                setBody(event.target.value);
+            }} className='form-control' rows="5"></textarea></p>
             <input type='submit' value="수정" className='btn btn-secondary'></input>
-        </div>
+        {/* </div> */}
         </form>
     </article>
     )
@@ -148,11 +148,16 @@ function Search(props){
 
 function Comment(props){
     return(
-        <div>
-            <span >{props.writer}</span>
-            <span >{props.write_time}</span>
-            <span>{props.comment}</span>
-        </div>  
+        <div className='card'>
+            <div className='card-body'>
+            <div style={{display:'flex'}}>
+                <div className='card-text'>{props.writer} : </div>
+                <div className='card-text'> &nbsp; {props.comment}</div>    
+            </div>
+            <p className='card-text' style={{color:'gray'}}>{props.write_time}</p>
+        </div> 
+        </div>
+         
     )
 }
 let ori_select_id = '';
@@ -226,6 +231,11 @@ function Home() {
     const [mode, setMode] = useState('HOME'); //[state로 사용할 변수 명(mode), state 값을 변경할 함수 명(setMode)]
     const [_id, setId] = useState(null); //1.2. .. 클릭한 id값 받아올때 사용하는 변수
     const [topics, setTopics] = useState([]);
+
+    //모달
+    const [modalOpen, setModalOpen] = useState(false);
+    const modalBackground = useRef();
+
     // const [commentData, setCD ] = useState([]);
     // useState([
     //   {id:1, title:'html', body:'html is ...'},
@@ -409,18 +419,42 @@ function Home() {
         <button onClick={event=>{
             event.preventDefault();
             setMode('CREATE');
+            setModalOpen(true)
         }} className='btn btn-primary'>게시물 추가</button>
-        {contextControl}
-        {contextDelete}
+        
         <Post topics ={topics} onChangeMode={(_id)=>{
             setMode('READ');
             setId(_id);
+            setModalOpen(true)
         }}></Post>
-        {content}
-        {comment_text}
+        {/* { modalOpen && content } */}
+        {
+        modalOpen &&
+        <div className={'modal-container'} ref={modalBackground} onClick={e => {
+          if (e.target === modalBackground.current) {
+            setMode('READ');
+            setModalOpen(false);
+            ori_select_id = '';
+          }
+        }}>
+          <div className={'modal-content'}>
+            <div>
+                {contextControl}
+                {contextDelete}
+                <button onClick={()=>{ setMode('READ'); setModalOpen(false); ori_select_id = '';}} className='btn btn-secondary'>X</button>
+            </div>
+            
+            {content}
+            {comment_text}
+            {/* <button className={'modal-close-btn'} onClick={() => setModalOpen(false)}>
+              모달 닫기
+            </button> */}
+          </div>
+        </div>
+      }
+        
         {/* <CommentList selectPostID = {_id}></CommentList> */}
-        
-        
+      
     </div>
     )
 }
