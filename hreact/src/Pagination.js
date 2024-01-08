@@ -24,7 +24,7 @@ export function Pagination({
   }
 
   return (
-    <div>
+    <div className="paginationBtn">
       <button onClick={goToPrevPage} disabled={currentPage === 1}>
         prev
       </button>

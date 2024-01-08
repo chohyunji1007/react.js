@@ -44,7 +44,7 @@ function Post(props){
         <div className="container post-table">
             <table className='table table-hover htable'>
                 <tbody>
-                    <tr><td>번호</td><td>제목</td><td>작성자</td><td>작성 시간</td></tr>
+                    <tr><td style={{width:"10%", height:"10px"}}>번호</td><td style={{width:"30%"}}>제목</td><td style={{width:"10%"}}>작성자</td><td style={{width:"20%"}}>작성 시간</td></tr>
                     {lis}
                 </tbody>
             </table>
@@ -155,6 +155,7 @@ function Comment(props){
         </div>  
     )
 }
+let ori_select_id = '';
 function CommentList(props){
     let commenturl = "http://localhost:3001/comment"
     let searchData = null;
@@ -162,8 +163,12 @@ function CommentList(props){
     const [commentData, setCD] = useState();
     
     useEffect(()=>{
-        
-        fetch(commenturl)
+        // console.log('ori_id = ', ori_id);
+        // console.log('props.selectPostID = ', props.selectPostID);
+        if(ori_select_id === props.selectPostID){
+            return;
+        }else{
+            fetch(commenturl)
         .then(res =>{
             return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
         }).then(data => {
@@ -193,6 +198,10 @@ function CommentList(props){
                 lis.push(<Comment key={'comment_0'} writer={''} write_time={''} comment={"작성된 댓글이 없습니다."}></Comment>);
             }
         })
+        }
+        
+        ori_select_id = props.selectPostID;
+        // console.log('ori_id2= ', ori_id);
     });
     return(
         <div id="comment_list">
@@ -274,6 +283,7 @@ function Home() {
     else if(mode === 'READ'){
         let title, body = null;
         let selectPostID = null;
+        // let ori_id = '';
         for(let i=0; i<topics.length; i++){
             if(topics[i].id === _id){
             title = topics[i].title;
