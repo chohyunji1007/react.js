@@ -42,12 +42,15 @@ function Post(props){
     }
     return(
         <div className="container post-table">
+            <div style={{width : '100%', height:'300px'}}>
             <table className='table table-hover htable'>
                 <tbody>
-                    <tr><td style={{width:"10%", height:"10px"}}>번호</td><td style={{width:"30%"}}>제목</td><td style={{width:"10%"}}>작성자</td><td style={{width:"20%"}}>작성 시간</td></tr>
+                    <tr><td style={{width:"10%", height:"10px"}}>번호</td><td style={{width:"30%"}}>제목</td><td style={{width:"10%"}}>작성자</td><td style={{width:"20%"}}>작성 일시</td></tr>
                     {lis}
                 </tbody>
             </table>
+            </div>
+            
             
             <Pagination
             postsNum={posts.length}
@@ -62,14 +65,25 @@ function Post(props){
 
 function Article(props){
     return(
-    // <article>
-    //     <h2>제목 : {props.title}</h2>
-    //     {props.body}
-    //   </article>
-    <div className='postShow'>
-        <div className='postName'> {props.title} </div>
-        <div className='postContent'> {props.body} </div>
+
+    <div className='card'>
+        <div className='card-body postShow'>
+            {/* <div className='postNameNTime'>
+                <div className='card-title postName'> {props.title} </div>
+                <div className='card-title postTime'> {props.write_time} </div>
+            </div>
+            
+            <div className='card-text postContent'> {props.body} </div> */}
+            <table>
+                <tbody>
+                    <tr><td>제목</td><td>작성자</td><td>작성 일시</td></tr>
+                    <tr><td>{props.title}</td><td>{props.writer}</td><td>{props.write_time}</td></tr>
+                    <tr><td rowSpan='3'>{props.body}</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
+    
     )
 }
 
@@ -89,6 +103,7 @@ function Create(props){
                 event.preventDefault(); //submit 후 reload되는걸 막기위해
                 const title = event.target.title.value;
                 const body = event.target.body.value;
+                
                 props.onCreate(title, body);
             }}>
             <div>
@@ -106,14 +121,17 @@ function Create(props){
 function Update(props){
     const [title, setTitle] = useState(props.title);
     const [body, setBody] = useState(props.body);
+    const getselectPostID = props.selectPostID;
     return(
     <article style={{width: "500px"}}>
         <h2> 게시물 수정 </h2>
         <form onSubmit={event=>{
-        event.preventDefault(); //submit 후 reload되는걸 막기위해
-        const title = event.target.title.value;
-        const body = event.target.body.value;
-        props.onUpdate(title, body);
+            event.preventDefault(); //submit 후 reload되는걸 막기위해
+            const title = event.target.title.value;
+            const body = event.target.body.value;
+            // const write_time = event.target.write_time.value;
+            // const writer = event.target.writer.value;
+            props.onUpdate(title, body);
         }}>
         {/* <div className='form-group'> */}
             <p><input type='text' name="title" placeholder='title' value={title} onChange={event=>{
@@ -140,7 +158,7 @@ function Search(props){
         <input type='text' name ="searchTitle" className="form-control" value={searchTitle} onChange={event=>{
             setsearchTitle(searchTitle);
             }}></input>
-        <input type='submit' className="btn btn-primary" value="검색" style={{marginLeft:"10px"}}></input>
+        <input type='submit' className="btn btn-primary" value="" style={{marginLeft:"10px"}}></input>
         <input type="button" className="btn btn-primary" value="X" style={{marginLeft:"10px", marginRight:"10px"}} onClick={function(){ window.location.reload(); }}></input>
     </form>
     )
@@ -148,13 +166,19 @@ function Search(props){
 
 function Comment(props){
     return(
-        <div className='card'>
-            <div className='card-body'>
-            <div style={{display:'flex'}}>
-                <div className='card-text'>{props.writer} : </div>
-                <div className='card-text'> &nbsp; {props.comment}</div>    
-            </div>
-            <p className='card-text' style={{color:'gray'}}>{props.write_time}</p>
+        <div className='card comment-card'>
+            <div className='card-body comment-body'>
+                <div style={{display:'flex', justifyContent: 'space-around'}}>
+                    <table style={{width: '100%'}}>
+                        <tbody>
+                            <tr><td style={{width: '10%', fontWeight : 'bold'}}>{props.writer} </td><td style={{width: '50%'}}>{props.comment}</td><td style={{width: '40%', textAlign:'right', color:'gray'}}>{props.write_time}</td></tr>
+                        </tbody>
+                    </table>
+                    {/* <div className='card-text' style={{fontWeight : 'bold'}}> </div>
+                    <div className='card-text'> &nbsp; {props.comment}</div>    
+                    <div className='card-text' style={{color:'gray'}}>{props.write_time}</div> */}
+                </div>
+                
         </div> 
         </div>
          
@@ -236,6 +260,9 @@ function Home() {
     const [modalOpen, setModalOpen] = useState(false);
     const modalBackground = useRef();
 
+    //update후 다시 read
+    const [updateAfterRead, setUAR] = useState(false);
+
     // const [commentData, setCD ] = useState([]);
     // useState([
     //   {id:1, title:'html', body:'html is ...'},
@@ -283,24 +310,38 @@ function Home() {
         movePage('/signup');
     }
     //페이지 이동
-
+    function newFetch(){
+        let searchData = null;
+        fetch(geturl)
+        .then(res =>{
+            return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+        }).then(data => {
+            searchData = data.filter(object =>{
+                if(object.title.indexOf(searchTitle) > -1){
+                    return object
+                }
+            })
+            setTopics(searchData);
+        })
+    }
     // console.log('current mode = ', mode);
     if(mode === 'HOME'){
 
-    // content = <Article title="web" body="Hello, Web"></Article>
-
     }
     else if(mode === 'READ'){
-        let title, body = null;
-        let selectPostID = null;
-        // let ori_id = '';
+        let title, body, write_time, writer = null;
+        // let selectPostID = null;
+        let searchData = null;
+       
         for(let i=0; i<topics.length; i++){
             if(topics[i].id === _id){
             title = topics[i].title;
             body = topics[i].body;
+            write_time = topics[i].write_time;
+            writer = topics[i].writer;
             }
         }
-        content = <Article title={title} body={body}></Article>
+        content = <Article title={title} body={body} write_time={write_time} writer={writer}></Article>
         contextControl = <a href={'/upate/'+ _id } onClick={event=>{
             event.preventDefault();
             setMode('UPDATE');
@@ -314,8 +355,14 @@ function Home() {
             fetch(delurl,{
                 method : "DELETE",
                 });
-                setMode('HOME');
+                // setModalOpen(false);
+                
+                // setMode('HOME');
+                alert("게시물 삭제 완료!");
+                window.location.reload();
+                
         }} className='btn btn-danger'>삭제</button>
+        
     }
     else if(mode === 'CREATE'){
         
@@ -345,11 +392,15 @@ function Home() {
 
     }
     else if(mode === 'UPDATE'){
-    let title, body = null;
+        let title, body, writer, write_time = null;
+        let searchData = null;
+        
         for(let i=0; i<topics.length; i++){
             if(topics[i].id === _id){
-            title = topics[i].title;
-            body = topics[i].body;
+                title = topics[i].title;
+                body = topics[i].body;
+                writer = topics[i].writer;
+                write_time = topics[i].write_time;
             }
         }
 
@@ -365,10 +416,15 @@ function Home() {
             body : JSON.stringify({
             // ...topics,
             title : title,
-            body : body
+            body : body,
+            writer : writer,
+            write_time : write_time
             }),
         })
-        setMode('READ');
+
+        // setMode('READ'); read 에서 다시 데이터 fetch해서 보여주고 싶은데 그게 안되네..
+        alert('게시물 수정 완료');
+        window.location.reload();
         }}></Update>
     }
     else if(mode === 'SEARCH'){
@@ -379,54 +435,57 @@ function Home() {
 
     return (
     <div className="Home">
-        <div className='navbar navbar-expand-lg navbar-dark bg-dark'>
+        <div className='navbar navbar-expand-lg navbar-dark bg-dark' style={{display:'flex', justifyContent : 'space-between'}}>
             <Header title="H" onChangeMode={()=>{
             setMode('HOME');
             }}></Header>
             <div className='home_loginBtn'>
+                {cookies["accessToken"]!==undefined ? <label style={{color:'white'}}>{cookies["accessToken"]} 님 &nbsp;</label> : null}
                 <input type="button" value={cookies["accessToken"]===undefined ? "로그인":"로그아웃"} 
                 onClick={cookies["accessToken"]===undefined ? goLogin:goLogout} className='btn btn-secondary'></input>
                 <input type="button" value="회원가입" onClick={goSignup} className='btn' style={{color:"#fff"}}></input>
             </div>
         </div>
             
-        
-        {cookies["accessToken"]!==undefined ? <label>{cookies["accessToken"]} 님</label> : null}
-            <div className='nameAndSearch'>
-                <div className='postName'>게시물 목록</div>
-                <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
-                    
-                    if(searchTitle ==='' || searchTitle === undefined){
-                        setMode('HOME');
-                    }
-                    let searchData = '';
-                    fetch(geturl)
-                    .then(res =>{
-                        return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
-                    }).then(data => {
-                        searchData = data.filter(object =>{
-                            if(object.title.indexOf(searchTitle) > -1){
-                                return object
-                            }
-                        })
-                        setTopics(searchData);
+        <div className='nameAndSearch'>
+            <div className='postName'>게시물 목록</div>
+            <Search searchTitle={searchTitle} onUpdate={(searchTitle)=>{
+                
+                if(searchTitle ==='' || searchTitle === undefined){
+                    setMode('HOME');
+                }
+                let searchData = '';
+                fetch(geturl)
+                .then(res =>{
+                    return res.json(); //res는 http응답이여서 .json()을 사용해 json으로 바꿔줌
+                }).then(data => {
+                    searchData = data.filter(object =>{
+                        if(object.title.indexOf(searchTitle) > -1){
+                            return object
+                        }
                     })
-                    setMode('SEARCH');
-                }}></Search>
+                    setTopics(searchData);
+                })
+                setMode('SEARCH');
+            }}></Search>
+        </div>
+ 
+        <div>
+            <Post topics ={topics} onChangeMode={(_id)=>{
+                setMode('READ');
+                setId(_id);
+                setModalOpen(true)
+            }}></Post>
+            <div style={{display : 'flex', justifyContent : 'flex-end'}}>
+                <button onClick={event=>{
+                    event.preventDefault();
+                    setMode('CREATE');
+                    setModalOpen(true)
+                }} className='btn btn-light' style={{marginRight : '10px'}}>게시물 추가</button>
             </div>
+        </div>
         
-
-        <button onClick={event=>{
-            event.preventDefault();
-            setMode('CREATE');
-            setModalOpen(true)
-        }} className='btn btn-primary'>게시물 추가</button>
         
-        <Post topics ={topics} onChangeMode={(_id)=>{
-            setMode('READ');
-            setId(_id);
-            setModalOpen(true)
-        }}></Post>
         {/* { modalOpen && content } */}
         {
         modalOpen &&
@@ -438,13 +497,18 @@ function Home() {
           }
         }}>
           <div className={'modal-content'}>
-            <div>
-                {contextControl}
-                {contextDelete}
+            <div className='modalCloseBtn'>
                 <button onClick={()=>{ setMode('READ'); setModalOpen(false); ori_select_id = '';}} className='btn btn-secondary'>X</button>
             </div>
-            
+            {/* 게시물 */}
             {content}
+            {/* 수정, 삭제 버튼 */}
+            <div className='modalCloseBtn'>
+            {contextControl}
+            {contextDelete}
+            </div>
+            
+            {/* 댓글 */}
             {comment_text}
             {/* <button className={'modal-close-btn'} onClick={() => setModalOpen(false)}>
               모달 닫기
@@ -452,9 +516,7 @@ function Home() {
           </div>
         </div>
       }
-        
-        {/* <CommentList selectPostID = {_id}></CommentList> */}
-      
+ 
     </div>
     )
 }

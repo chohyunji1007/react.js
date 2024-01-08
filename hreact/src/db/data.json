@@ -1,11 +1,11 @@
 {
   "topics": [
     {
-      "id": 1,
       "title": "html",
-      "body": "html is ...",
+      "body": "html is ...11",
       "writer": "cho",
-      "write_time": "1월6일 오후 5시 30분"
+      "write_time": "2024. 1. 8. 오후 5:48:22",
+      "id": 1
     },
     {
       "id": 2,
@@ -118,6 +118,12 @@
       "comment": "댓글 2",
       "write_time": "1월6일 오후 9시 10분"
     },
+    {
+        "writer": "cho3",
+        "post_id": "1",
+        "comment": "댓글 3",
+        "write_time": "1월9일 오후 1시 23분"
+      },
     {
       "writer": "cho4",
       "post_id": "2",

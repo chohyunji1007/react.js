@@ -34,6 +34,7 @@ export function Pagination({
           key={page}
           onClick={() => setCurrentPage(page)}
           className={currentPage === page ? "active" : ""}
+          style={currentPage === page ? {backgroundColor:'red'} : null}
         >
           {page}
         </button>
