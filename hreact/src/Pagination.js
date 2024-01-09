@@ -24,25 +24,54 @@ export function Pagination({
   }
 
   return (
-    <div className="paginationBtn">
-      <button onClick={goToPrevPage} disabled={currentPage === 1}>
-        prev
+    <div className="pagination" style={{zIndex:'0'}}>
+      <div className="page-item">
+      <button className='page-link' onClick={goToPrevPage} disabled={currentPage === 1} style={currentPage === 1 ? {color:'gray'} :{color : '#59705d'}}>
+        
+        { '<' }
       </button>
+      </div>
+      
 
       {pageList.map((page) => (
         <button
           key={page}
           onClick={() => setCurrentPage(page)}
-          className={currentPage === page ? "active" : ""}
-          style={currentPage === page ? {backgroundColor:'red'} : null}
+          className={currentPage === page ? "active page-link" : "page-link"}
+          style={currentPage === page ? {backgroundColor:'#AFC8AD', borderColor : '#AFC8AD'} : {color : '#59705d'}}
         >
           {page}
         </button>
       ))}
-
-      <button onClick={goToNextPage} disabled={currentPage === pageList.length}>
-        next
+      <div className="page-item">
+      <button className='page-link' onClick={goToNextPage} disabled={currentPage === pageList.length} style={currentPage === pageList.length ? {color:'gray'} : {color : '#59705d'}}>
+        { '>' }
       </button>
+      </div>
+      
     </div>
+
+    // <nav className="hpage">
+    //   <ul className="pagination">
+    //     <li className="page-item">
+    //       <a className="page-link" onClick={goToPrevPage} disabled> {'<'} </a>
+    //     </li>
+
+    //     {pageList.map((page) => (
+    //     <li
+    //       key={page}
+    //       onClick={() => setCurrentPage(page)}
+    //       className={currentPage === page ? "active page-link" : "page-link"}
+    //       // style={currentPage === page ? {backgroundColor:'gray'} : null}
+    //     >
+    //       {page}
+    //     </li>
+    //   ))}
+
+    //     <li className="page-item">
+    //       <a className="page-link" onClick={goToNextPage} disabled={currentPage === pageList.length}> {'>'} </a>
+    //     </li>
+    //   </ul>
+    // </nav>
   );
 }
