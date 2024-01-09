@@ -379,8 +379,6 @@ function Home() {
                 alert('작성자만 삭제 가능');
             }
 
-            
-                
         }} className='btn btn-danger'>삭제</button>
         
     }
@@ -458,7 +456,7 @@ function Home() {
     return (
     <div className="Home">
         <div className='navbar navbar-expand-lg' style={{display:'flex', justifyContent : 'space-between', background: '#EEE7DA'}}>
-            <Header title="HOME" onChangeMode={()=>{
+            <Header title="H" onChangeMode={()=>{
                 setMode('HOME');
             }}></Header>
             <div className='home_loginBtn'>

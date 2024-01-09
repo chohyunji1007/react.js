@@ -21,9 +21,9 @@ export default function Signup(){
 
     return (
       <div className='login-header'>
-        <div className='navbar navbar-expand-lg navbar-dark bg-dark'>
+        <div className='navbar navbar-expand-lg' style={{display:'flex', justifyContent : 'space-between', background: '#EEE7DA'}}>
         <header>
-            <h1><a className='nav-brand' href='/' style={{color : "#fff", textDecoration : "none", marginLeft:"10px"}}onClick={(event)=>{
+            <h1><a className='nav-brand' href='/' style={{color : "#88AB8E", textDecoration : "none", marginLeft:"10px"}}onClick={(event)=>{
             
         }}>H</a></h1>
         </header>
@@ -47,24 +47,25 @@ export default function Signup(){
                       // console.log("아이디 중복!!");
                       alert("아이디가 이미 존재 함~ 다른 아이디로 가입해~");
                     }else{
-                      console.log("가입 가능!!");
-                    //   fetch(geturl, {
-                    //   method : 'POST',
-                    //   headers : {
-                    //     "Content-Type" : "application/json",
-                    //   },
-                    //   body : JSON.stringify({
-                    //   //   id:nextId,
-                    //     userID:userID,
-                    //     userEmail : userEmail,
-                    //     PW : PW
+                      // console.log("가입 가능!!");
+                      fetch(geturl, {
+                      method : 'POST',
+                      headers : {
+                        "Content-Type" : "application/json",
+                      },
+                      body : JSON.stringify({
+                      //   id:nextId,
+                        userID:userID,
+                        userEmail : userEmail,
+                        PW : PW
                         
-                    //   }),
-                    // }).then(res =>{
-                    //   if(res.ok){
-                    //     console.log("회원가입 완료!");
-                    //   }
-                    // })
+                      }),
+                    }).then(res =>{
+                      if(res.ok){
+                        alert("회원가입 완료!");
+                        goLogin();
+                      }
+                    })
                     }
                       
                   });

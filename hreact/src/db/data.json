@@ -87,6 +87,12 @@
       "userEmail": "1@mail.com",
       "PW": "111",
       "id": 5
+    },
+    {
+      "userID": "cho5",
+      "userEmail": "",
+      "PW": "111",
+      "id": 6
     }
   ],
   "comment": [
@@ -103,10 +109,10 @@
       "write_time": "2024. 1. 9. 오후 3:14:55"
     },
     {
-        "writer": "cho2",
-        "post_id": "8",
-        "comment": "댓글 3",
-        "write_time": "2024. 1. 9. 오후 3:16:10"
-      }
+      "writer": "cho2",
+      "post_id": "8",
+      "comment": "댓글 3",
+      "write_time": "2024. 1. 9. 오후 3:16:10"
+    }
   ]
 }

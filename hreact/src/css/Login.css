@@ -6,7 +6,8 @@ body, html, #root ,.login{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: aliceblue;
+    background-color: #fdfdfd;
+    
 }
 .form-group{
     height: 80%;
@@ -29,14 +30,16 @@ body, html, #root ,.login{
     height: 5%;
 }
 .loginBtn{
-    background-color: #17be86;
-    border-color: #38d39f;
+    /* background-color: #17be86;
+    border-color: #38d39f; */
+    background-color:#88AB8E;
+    border:none;
     cursor: pointer;
     /* border-radius: 20px; */
     color: white;
 }
 .loginBtn:hover{
-    background-color: #12ae7a;
+    background-color:#88AB8E;
 }
 
 .form-label{

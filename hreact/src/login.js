@@ -22,9 +22,9 @@ export default function Login(){
 
     return (
         <div className='login-header'>
-            <div className='navbar navbar-expand-lg navbar-dark bg-dark'>
+            <div className='navbar navbar-expand-lg' style={{display:'flex', justifyContent : 'space-between', background: '#EEE7DA'}}>
             <header>
-                <h1><a className='nav-brand' href='/' style={{color : "#fff", textDecoration : "none", marginLeft:"10px"}}onClick={(event)=>{
+                <h1><a className='nav-brand' href='/' style={{color : "#88AB8E", textDecoration : "none", marginLeft:"10px"}}onClick={(event)=>{
                 
             }}>H</a></h1>
             </header>
