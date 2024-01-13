@@ -163,7 +163,7 @@ function Search(props){
     }} style={{display : "flex"}}>
         <input type='text' name ="searchTitle" className="form-control" value={searchTitle} placeholder='제목' onChange={event=>{
             setsearchTitle(searchTitle);
-            }}></input>
+            }} autocomplete="off"></input>
         <button type='submit' form='searchForm' className='btn btn-light'><i className='bi bi-search'></i></button>
         <button className='btn btn-light bi bi-x'style={{marginLeft:"10px", marginRight:"10px"}} onClick={function(){ window.location.reload(); }}></button>
     </form>
